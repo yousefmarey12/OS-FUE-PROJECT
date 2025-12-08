@@ -43,7 +43,7 @@ testArrP = [
      },
        {
           "id":1,
-          "arrivalTime": 2,
+          "arrivalTime":10,
           "burstTime": 4,
           "priority": 2,
           "timeQuantum": -1
@@ -57,9 +57,9 @@ testArrP = [
      },
        {
           "id": 3,
-          "arrivalTime": 5,
+          "arrivalTime": 4,
           "burstTime": 4,
-          "priority": 1,
+          "priority": 54,
           "timeQuantum": -1
      },
 ]
@@ -130,58 +130,68 @@ def printTimeInstance(time, processID = ""):
          print("At time = " + str(time) +", CPU is doing nothing.")
 
 
-def createGanttChart(type="FCFS", bursts=[]):
-    time = 0
+# def createGanttChart(type="FCFS", bursts=[]):
+#     time = 0
+#     arr = []
+#     # ---------------------------
+#     # FCFS (your original logic)
+#     # ---------------------------
+#     if type == "FCFS":
+#         bursts.sort(key=sorter("arrivalTime"))
+#         for obj in bursts:
+#             for _ in range(obj["burstTime"]):
+#                 printTimeInstance(time, obj["id"])
+#                 obj = {
+#                     "time": time,
+#                     "id": obj["id"]
+#                 }
+#                 arr.append(obj)
+#                 time += 1
+#         return arr
 
-    # ---------------------------
-    # FCFS (your original logic)
-    # ---------------------------
-    if type == "FCFS":
-        bursts.sort(key=sorter("arrivalTime"))
-        for obj in bursts:
-            for _ in range(obj["burstTime"]):
-                printTimeInstance(time, obj["id"])
-                time += 1
-        return
+#     # ---------------------------
+#     # SJF (Non-Preemptive)
+#     # ---------------------------
+#     elif type == "SJF":
 
-    # ---------------------------
-    # SJF (Non-Preemptive)
-    # ---------------------------
-    elif type == "SJF":
+#         # sort by arrival time
+#         bursts.sort(key=sorter("arrivalTime"))
 
-        # sort by arrival time
-        bursts.sort(key=sorter("arrivalTime"))
+#         n = len(bursts)
+#         completed = [False] * n     # track which processes are done
+#         done = 0
+#         arr = []
+#         while done < n:
 
-        n = len(bursts)
-        completed = [False] * n     # track which processes are done
-        done = 0
+#             # get all processes that have arrived by current time
+#             available = [
+#                 bursts[i] for i in range(n)
+#                 if bursts[i]["arrivalTime"] <= time and not completed[i]
+#             ]
 
-        while done < n:
+#             if not available:
+#                 # CPU is idle → jump forward
+#                 time += 1
+#                 continue
 
-            # get all processes that have arrived by current time
-            available = [
-                bursts[i] for i in range(n)
-                if bursts[i]["arrivalTime"] <= time and not completed[i]
-            ]
+#             # choose shortest burst time among arrived processes
+#             job = min(available, key=lambda p: p["burstTime"])
 
-            if not available:
-                # CPU is idle → jump forward
-                time += 1
-                continue
+#             # find index of job
+#             idx = bursts.index(job)
 
-            # choose shortest burst time among arrived processes
-            job = min(available, key=lambda p: p["burstTime"])
+#             # execute the job
+#             for _ in range(job["burstTime"]):
+#                 printTimeInstance(time, job["id"])
+#                 obj = {
+#                     "time": time,
+#                     "id": job["id"] 
+#                 }
+#                 arr.append(obj)
+#                 time += 1
 
-            # find index of job
-            idx = bursts.index(job)
-
-            # execute the job
-            for _ in range(job["burstTime"]):
-                printTimeInstance(time, job["id"])
-                time += 1
-
-            completed[idx] = True
-            done += 1
+#             completed[idx] = True
+#             done += 1
 
      
 def FCFS(bursts):
@@ -190,15 +200,21 @@ def FCFS(bursts):
     bursts = sorted(bursts, key=lambda x: x["arrivalTime"])
 
     for p in bursts:
+        # Instance:
+            # The time elapsed is less than the time of the arrival of the earliest burst
+            # Then the CPU will be IDLE and time += 1
         while time < p["arrivalTime"]:
-            time += 1  # CPU idle
+            time += 1 
         for _ in range(p["burstTime"]):
+            # Now we want to loop over the burstTime (notice how instead of an alphabet we use _)
             printTimeInstance(time, p["id"])
             obj = {
                 "id": p["id"],
                 "time": time
             }
+            # we have to add it to the array to use for later and stats
             arr.append(obj)
+            # a burst time takes one time unit so we increment it
             time += 1
 
     return arr
@@ -207,100 +223,132 @@ def FCFS(bursts):
 def SJF_NonPreemptive(bursts):
     time = 0
     n = len(bursts)
-    arr = []
     completed = [False] * n
-    bursts = sorted(bursts, key=lambda x: x["arrivalTime"])  # stable
-
+    arr = []
     done = 0
+    
     while done < n:
-
-        # processes that have arrived
+        # print("hello")
+        sorted1 =  sorted(bursts, key= lambda x: x["arrivalTime"])
+       
         available = [
-            bursts[i] for i in range(n)
-            if bursts[i]["arrivalTime"] <= time and not completed[i]
+            
         ]
 
-        if not available:
-            time += 1  # idle CPU
-            continue
-
-        # pick job with smallest burst time
-        job = min(available, key=lambda p: p["burstTime"])
-        idx = bursts.index(job)
-
-        # execute fully (non-preemptive)
-        for _ in range(job["burstTime"]):
-            printTimeInstance(time, job["id"])
-
+        i = 0
+        while i < len(sorted1):
+            if (sorted1[i]["arrivalTime"] <= time and  completed[i] == False):
+                available.append(sorted1[i])
+            i += 1
+        while len(available) == 0:
+            # print(sorted1)
             time += 1
+            if sorted1[0]["arrivalTime"] <= time:
+                break
+        # print("available")
+        # print(available)
+        
+        job = min(available, key=lambda x: x["burstTime"])
+        idx = sorted1.index(job)
 
+        for _ in range(job["burstTime"]):
+            
+            printTimeInstance(time,     job["id"])
+            obj = {
+                "time": time,
+                "id": job["id"]
+            }
+            arr.append(obj)
+            time += 1
         completed[idx] = True
         done += 1
+    return arr
 
 
 def SJF_Preemptive(bursts):  # SRTF
     time = 0
     n = len(bursts)
+    remaining = []
     arr = []
-    bursts = sorted(bursts, key=lambda x: x["arrivalTime"])
-    remaining = [p["burstTime"] for p in bursts]
+    for i in range(0, n):
+        remaining.append(bursts[i]["burstTime"])
     completed = 0
-
     while completed < n:
-
-        available = [
-            (i, bursts[i])
-            for i in range(n)
-            if bursts[i]["arrivalTime"] <= time and remaining[i] > 0
-        ]
-
+        bursts = sorted(bursts, key=lambda x: x["arrivalTime"])
+        available = []
+        i = 0
+        while i < len(bursts):
+            if (bursts[i]["arrivalTime"] <= time and remaining[i] > 0):
+                available.append((i, bursts[i]))
+            i += 1
+        
         if not available:
             time += 1
             continue
-
-        # pick smallest remaining time
-        idx, job = min(available, key=lambda x: remaining[x[0]])
-
-        # execute for 1 time unit
-        printTimeInstance(time, job["id"])
+        
+        job = min(available, key=lambda x: remaining[x[0]])
+        idx = bursts.index(job[1])
+        printTimeInstance(time, job[1]["id"])
+        obj = {
+            "time": time,
+            "id": job[1]["id"]
+          }
+        arr.append(obj)
         remaining[idx] -= 1
         time += 1
-
         if remaining[idx] == 0:
             completed += 1
+    return arr
+        
+        
+        
+        
+            
+cpuUtilization = 100
 
 
 
 def Priority_Preemptive(bursts):
     time = 0
     n = len(bursts)
+    remaining = []
     arr = []
-    bursts = sorted(bursts, key=lambda x: x["arrivalTime"])
-    remaining = [p["burstTime"] for p in bursts]
+    wait =0
+    for i in range(0, n):
+        remaining.append(bursts[i]["burstTime"])
     completed = 0
-
     while completed < n:
-
-        available = [
-            (i, bursts[i])
-            for i in range(n)
-            if bursts[i]["arrivalTime"] <= time and remaining[i] > 0
-        ]
-
+        bursts = sorted(bursts, key=lambda x: x["arrivalTime"])
+        available = []
+        i = 0
+        while i < len(bursts):
+            if (bursts[i]["arrivalTime"] <= time and remaining[i] > 0):
+                available.append((i, bursts[i]))
+            i += 1
+        
         if not available:
+            printTimeInstance(time)
             time += 1
+            wait += 1
+            
             continue
-
-        # smallest priority number = highest priority
-        idx, job = min(available, key=lambda x: x[1]["priority"])
-
-        # execute 1 time unit
-        printTimeInstance(time, job["id"])
+        
+        job = min(available, key=lambda x: x[1]["priority"])
+        idx = bursts.index(job[1])
+        printTimeInstance(time, job[1]["id"])
+        obj = {
+            "time": time,
+            "id": job[1]["id"]
+          }
+        arr.append(obj)
         remaining[idx] -= 1
         time += 1
-
+        
         if remaining[idx] == 0:
             completed += 1
+    global cpuUtilization
+    cpuUtilization =  ((time - wait) / time) * 100
+    return arr
        
           
 
@@ -333,23 +381,97 @@ def firstCome(processArray = testArr):
      print("First Come First Serve")
 
 
-print(firstCome(testArr))
+# print(firstCome(testArr))
 def sjf(processArray = testArr):
 
-     bursts =createGanttChart("SJF", processArray)
+     bursts = createGanttChart("SJF", processArray)
      print("Shortest Job First")
-# sjf(testArr)
 
 def srt(processArray = testArr):
      # Mohamed's Job
 
-     bursts =createGanttChart("SRTF", processArray)
+     bursts = createGanttChart("SRTF", processArray)
+     print(bubbleSort(bursts))
      print("Shortest Remaining Time")
+# srt(testArr)
+
+def bubbleSort(arr):
+    n = len(arr)
+    
+    # Traverse through all array elements
+    for i in range(n):
+        swapped = False
+
+        # Last i elements are already in place
+        for j in range(0, n-i-1):
+
+            # Traverse the array from 0 to n-i-1
+            # Swap if the element found is greater
+            # than the next element
+            if arr[j]["id"] > arr[j+1]["id"]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+                swapped = True
+        if (swapped == False):
+            break
+    return arr
 def priority(processArray = testArrP):
      # Yousef's Job
      # Create bursts from testArr
-    
+     arr = [] 
      bursts =createGanttChart("PRIORITY_PREEMPTIVE", processArray )
+    #  print(bursts)
+    #  print(bubbleSort(bursts))
+     i = 0
+     currentID = bursts[0]["id"]
+     arr = []
+     arr.append([])
+     bursts2 = bubbleSort(bursts)
+     j = 0
+    #  print(bursts
+     while i < len(bursts2):
+         if currentID == bursts2[i]["id"]:
+            arr[j].append(bursts2[i])
+         else:
+            j += 1
+            arr.append([])
+            arr[j].append(bursts2[i])
+            
+         currentID = bursts2[i]["id"]
+         i += 1
+         
+
+     print(len(arr[2]))
+     i = 0
+     
+     avgWaitingTime = 0
+     avgTAT = 0
+     while i < len(arr):
+         j = 0
+         sTime = 0
+         eTime = 0
+         wTime = 0
+         while  j < len(arr[i]):
+               
+                if j != 0:
+                    wTime += (arr[i][j]["time"] - arr[i][j -1]["time"] - 1)
+                if j == 0:
+                    sTime = arr[i][0]["time"]
+                if j == len(arr[i]) - 1:
+                    eTime = arr[i][j]["time"]
+                    avgWaitingTime +=wTime
+                    avgTAT += (eTime - sTime + 1)
+                    print("Start Time for Process "  + str(arr[i][0]["id"]) + " is " + str(sTime))
+                    print("End Time for Process "  + str(arr[i][0]["id"]) + " is " + str(eTime))
+                    print("Turnaround Time for Process is " + str(eTime - sTime + 1))
+                    print("Wait Time for Process is " + str(wTime))
+                j += 1
+         print("___________")
+         i += 1
+     avgWaitingTime = avgWaitingTime / len(arr)
+     avgTAT = avgTAT / len(arr)
+     print("CPU Utilization is " + str(cpuUtilization) + "%")
+     print("Average Waiting Time is " + str(avgWaitingTime))
+     print("Average TAT is " + str(avgTAT))
      print("Priority-Based")
 
 srt(testArr)
