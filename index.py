@@ -1,36 +1,281 @@
 import math
 import random
 
+# 
+# Segmentation
+# 
+pageSize = 4
+
+physicalMemory = 32
 testArr = [
      {
           "id": 0,
           "arrivalTime": 0,
+          "size": 4,
+          "segments": [
+              {
+                  "baseAddress": 5,
+                  "size": 2
+              },
+              {
+                  "baseAddress": 8,
+                  "size": 4
+              }
+          ],
           "burstTime": 5,
           "priority": -1,
           "timeQuantum": -1
      },
        {
           "id":1,
+          "size": 4,
+          "segments": [
+                       {
+                  "baseAddress": 0,
+                  "size": 2
+              },
+              {
+                  "baseAddress": 3,
+                  "size": 1
+              }
+          ],
           "arrivalTime": 1,
           "burstTime": 3,
           "priority": -1,
           "timeQuantum": -1
      },
-       {
+    {
           "id": 2,
           "arrivalTime": 2,
           "burstTime": 8,
+          "segments": [
+                       {
+                  "baseAddress": 20,
+                  "size": 4
+              },
+              {
+                  "baseAddress": 26,
+                  "size": 2
+              }
+          ],
+          "size": 4,
           "priority": -1,
           "timeQuantum": -1
      },
        {
           "id": 3,
           "arrivalTime": 3,
+          "size": 8,
+          "segments": [
+                       {
+                  "baseAddress": 16,
+                  "size": 3
+              },
+              {
+                  "baseAddress": 14,
+                  "size": 1
+              }
+          ],
           "burstTime": 6,
           "priority": -1,
           "timeQuantum": -1
-     },
+     }
 ]
+
+segments = {}
+def printSegments(processes):
+    i = 0
+    print("Segment | Base | Limit")
+    k = 0
+    while i < len(processes):
+        j = 0
+        while j < len(processes[i]["segments"]):
+            
+            print(str(k) + "        | " + str(processes[i]["segments"][j]["baseAddress"]) +  "       | " + str(processes[i]["segments"][j]["size"]))
+            segments[k] = {
+                "baseAddress": processes[i]["segments"][j]["baseAddress"],
+                "size": processes[i]["segments"][j]["size"]
+            }
+            k += 1
+            j += 1
+        
+        i += 1
+
+
+def getPhysicalAddress(segmentID, offset):
+    if segments[segmentID]:
+        s = segments[segmentID]
+        if (offset > s["size"] ):
+            print("Not good offset")
+            return -1
+        print("Logical Address of segment " + str(segmentID) + " and offset of " + str(offset) + " has a physical address is " + str( s["baseAddress"] + offset))
+        return s["baseAddress"] + offset
+
+printSegments(testArr)
+getPhysicalAddress(4, 3)
+
+
+# 
+# Paging
+# 
+frames = [
+    
+]
+def getProcess(array, id):
+    i = 0
+    while i < len(array):
+        if array[i]["id"] == id:
+            return array[i]
+        i += 1
+
+
+def initializeFrames():
+    i = 0
+    while i < physicalMemory / pageSize:
+        frames.append({
+            "id": -1,
+            "bytes": []
+        })
+        j = 0
+        while j < pageSize:
+            frames[len(frames) - 1]["bytes"].append(-1)
+            j += 1
+        
+        i += 1
+        
+
+pageTables = []
+
+def calculatePageOffset(logicalAddress, m, n):
+    b = f"{logicalAddress:0{m}b}"
+    i = 0
+    str1 = ""
+    while i < n:
+        str1 += b[n + i]
+        i += 1
+
+    d= int(str1,2)
+    return d
+
+def calculatePageNumber(logicalAddress, m, n):
+    b = f"{logicalAddress:0{m}b}"
+    i = 0
+    print(b)
+    str1 = ""
+    while i < m - n:
+        str1 += b[i]
+        i += 1
+    p = int(str1, 2)
+    return p
+
+
+def calculateNumPages(processSize, pageSize): 
+    return math.ceil(processSize/pageSize)
+
+def logicalToPhysical(frameSize, frameNumber, offset):
+    return (frameSize * frameNumber) + offset
+
+def findFreeFrame():
+    i = 0
+    while i < len(frames):
+        if frames[i]["id"] == -1:
+            return i
+        i += 1
+    print("this runs a billion times")
+    return -1
+
+def scheduleFrame(id):
+    index = findFreeFrame()
+    if (index != -1):
+        frames[index]["id"] = id
+    else:
+        print("All frames busy")
+    return index
+        
+
+def makePageTable(array, processID):
+    i = 0
+    memoryFull = False
+    process = getProcess(array, processID)
+    pageTables.append({
+        "id": processID,
+        "mapping": []
+    })
+    while i < len(array):
+
+        if pageTables[i]["id"] == id:
+            return pageTables[i]
+        pageTables.append({
+        "id": processID,
+        "mapping": []
+        })
+        i += 1
+    numPages= calculateNumPages(process["size"], pageSize)
+
+    i = 0
+    while i < numPages and not memoryFull:
+        if (scheduleFrame(processID) == -1):
+            print("No Memory For Process")
+            memoryFull = True
+        i += 1
+
+
+def printMemoryLayout(pagesTables):
+    i = 1
+    pageNum = 0
+    currentPID = pagesTables[0]["id"]
+    while i < len(pagesTables):
+        if pagesTables[i]["id"] == -1:
+            print("Frame #" + str(i) + " is free" )
+        if currentPID != pagesTables[i]["id"]:
+            pageNum = 0
+        print("Frame #" + str(i) + " holds PID #" + str(pagesTables[i]["id"]) + " and page number " + str(pageNum) )
+        pageNum += 1
+        currentPID = pagesTables[i]["id"]
+        i += 1
+    i = 1
+    pageNum = 0
+    currentPID = pagesTables[0]["id"]
+    while i < len(pagesTables):
+        rand =math.floor((random.random() * pageSize))
+        print("For Process of PID #" + str(pageTables[i]["id"]))
+        if currentPID != pagesTables[i]["id"]:
+            pageNum = 0
+        print("The Physical Address at logical address = " +str(pageNum) + " and offset = " + str(rand))
+        print(logicalToPhysical(pageSize, pageNum, rand) )
+
+        pageNum += 1
+        currentPID = pagesTables[i]["id"]
+        i += 1
+       
+
+
+def makePageTables(processes):
+    i = 0
+    while i < len(processes):
+        makePageTable(processes, processes[i]["id"])
+        i += 1
+    
+
+
+initializeFrames()
+makePageTables(testArr)
+
+printMemoryLayout(frames)
+
+
+
+
+# 
+# 
+# CPU Scheduling
+# 
+   
+
+
+# logicalToPhysical(4, 32)
+    
+    
 
 testArrP = [
      {
@@ -435,7 +680,7 @@ def firstCome(processArray = testArr):
      print("First Come First Serve")
 
 
-firstCome(testArr)
+# firstCome(testArr)
 
 # print(firstCome(testArr))
 def sjf(processArray = testArr):
@@ -571,4 +816,5 @@ def priority(processArray = testArrP):
      print("Average Waiting Time is " + str(avgWaitingTime))
      print("Average TAT is " + str(avgTAT))
      print("Priority-Based")
+
 
