@@ -1,4 +1,80 @@
 import math
+import random
+
+testArr = [
+     {
+          "id": 0,
+          "arrivalTime": 0,
+          "size": 4,
+          "segments": [
+              {
+                  "baseAddress": 5,
+                  "size": 2
+              },
+              {
+                  "baseAddress": 8,
+                  "size": 4
+              }
+          ],
+          "burstTime": 5,
+          "priority": -1,
+          "timeQuantum": -1
+     },
+       {
+          "id":1,
+          "size": 4,
+          "segments": [
+                       {
+                  "baseAddress": 0,
+                  "size": 2
+              },
+              {
+                  "baseAddress": 3,
+                  "size": 1
+              }
+          ],
+          "arrivalTime": 1,
+          "burstTime": 3,
+          "priority": -1,
+          "timeQuantum": -1
+     },
+    {
+          "id": 2,
+          "arrivalTime": 2,
+          "burstTime": 8,
+          "segments": [
+                       {
+                  "baseAddress": 20,
+                  "size": 4
+              },
+              {
+                  "baseAddress": 26,
+                  "size": 2
+              }
+          ],
+          "size": 4,
+          "priority": -1,
+          "timeQuantum": -1
+     },
+       {
+          "id": 3,
+          "arrivalTime": 3,
+          "size": 8,
+          "segments": [
+                       {
+                  "baseAddress": 16,
+                  "size": 3
+              },
+              {
+                  "baseAddress": 14,
+                  "size": 1
+              }
+          ],
+          "burstTime": 6,
+          "priority": -1,
+          "timeQuantum": -1
+     }
+]
 
 
 testArrP = [
@@ -539,3 +615,69 @@ def priority(processArray=testArrP):
     print("Average TAT is " + str(avgTAT))
     print("Priority-Based")
 
+def main():
+    print("==== Mini OS CPU Scheduling Simulator ====")
+
+    # 1️⃣ Get number of processes
+    n = int(input("Enter number of processes: "))
+
+    processes = []
+
+    # 2️⃣ Gather process details
+    for i in range(n):
+        print(f"\n--- Enter details for Process {i} ---")
+
+        pid = int(input("Process ID: "))
+        arrival = int(input("Arrival Time: "))
+        burst = int(input("Burst Time: "))
+        priority = input("Priority (press Enter if not used): ")
+        quantum = input("Time Quantum (press Enter if not used): ")
+
+        # Convert empty input to -1
+        priority = int(priority) if priority.strip() != "" else -1
+        quantum = int(quantum) if quantum.strip() != "" else -1
+
+        # Create process object
+        process = {
+            "id": pid,
+            "arrivalTime": arrival,
+            "burstTime": burst,
+            "priority": priority,
+            "timeQuantum": quantum
+        }
+
+        processes.append(process)
+
+    # 3️⃣ Choose algorithm
+    print("\nChoose Scheduling Algorithm:")
+    print("1. FCFS")
+    print("2. SJF (Non-Preemptive)")
+    print("3. SRTF (SJF Preemptive)")
+    print("4. Priority (Preemptive)")
+    print("5. Round Robin (NOT IMPLEMENTED IN YOUR CODE)")
+    choice = int(input("Enter choice: "))
+
+    print("\n===== RESULTS =====")
+
+    # 4️⃣ Run selected algorithm
+    if choice == 1:
+        firstCome(processes)
+
+    elif choice == 2:
+        sjf(processes)
+
+    elif choice == 3:
+        srt(processes)
+
+    elif choice == 4:
+        priority(processes)
+
+    elif choice == 5:
+        print("Round Robin not implemented in provided code!")
+
+    else:
+        print("Invalid choice!")
+
+
+# Run main
+main()
