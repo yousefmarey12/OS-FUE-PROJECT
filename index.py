@@ -1,6 +1,7 @@
 import math
 import random
 
+
 # 
 # Segmentation
 # 
@@ -118,9 +119,7 @@ getPhysicalAddress(4, 3)
 # 
 # Paging
 # 
-frames = [
-    
-]
+frames = []
 def getProcess(array, id):
     i = 0
     while i < len(array):
@@ -332,6 +331,7 @@ testArrR = [
      },
 
 ]
+
 def initiateProcess(id, arrivalTime, burstTime, priority = -1, timeQuantum = -1):
     obj = {}
     obj["id"] = id
@@ -816,5 +816,4 @@ def priority(processArray = testArrP):
      print("Average Waiting Time is " + str(avgWaitingTime))
      print("Average TAT is " + str(avgTAT))
      print("Priority-Based")
-
 
