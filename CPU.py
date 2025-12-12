@@ -618,12 +618,10 @@ def priority(processArray=testArrP):
 def main():
     print("==== Mini OS CPU Scheduling Simulator ====")
 
-    # 1️⃣ Get number of processes
     n = int(input("Enter number of processes: "))
 
     processes = []
 
-    # 2️⃣ Gather process details
     for i in range(n):
         print(f"\n--- Enter details for Process {i} ---")
 
@@ -633,11 +631,9 @@ def main():
         priority = input("Priority (press Enter if not used): ")
         quantum = input("Time Quantum (press Enter if not used): ")
 
-        # Convert empty input to -1
         priority = int(priority) if priority.strip() != "" else -1
         quantum = int(quantum) if quantum.strip() != "" else -1
 
-        # Create process object
         process = {
             "id": pid,
             "arrivalTime": arrival,
@@ -648,7 +644,6 @@ def main():
 
         processes.append(process)
 
-    # 3️⃣ Choose algorithm
     print("\nChoose Scheduling Algorithm:")
     print("1. FCFS")
     print("2. SJF (Non-Preemptive)")
@@ -658,7 +653,6 @@ def main():
 
     print("\n===== RESULTS =====")
 
-    # 4️⃣ Run selected algorithm
     if choice == 1:
         firstCome(processes)
 
@@ -677,6 +671,5 @@ def main():
     else:
         print("Invalid choice!")
 
-
-# Run main
-main()
+if __name__ == "__main__":
+    main()
