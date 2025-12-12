@@ -654,7 +654,6 @@ def main():
     print("2. SJF (Non-Preemptive)")
     print("3. SRTF (SJF Preemptive)")
     print("4. Priority (Preemptive)")
-    print("5. Round Robin (NOT IMPLEMENTED IN YOUR CODE)")
     choice = int(input("Enter choice: "))
 
     print("\n===== RESULTS =====")
