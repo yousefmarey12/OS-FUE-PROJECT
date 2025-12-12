@@ -616,7 +616,7 @@ def priority(processArray=testArrP):
     print("Priority-Based")
 
 def main():
-    print("==== Mini OS CPU Scheduling Simulator ====")
+    print("==== CPU Scheduling Simulator ====")
 
     n = int(input("Enter number of processes: "))
 

@@ -148,58 +148,39 @@ def scheduleFrame(id):
     return index
 
 def makePageTable(array, processID):
-    i = 0
-    memoryFull = False
     process = getProcess(array, processID)
+
     pageTables.append({
         "id": processID,
         "mapping": []
     })
-    while i < len(array):
 
-        if pageTables[i]["id"] == id:
-            return pageTables[i]
-        pageTables.append({
-            "id": processID,
-            "mapping": []
-        })
-        i += 1
     numPages = calculateNumPages(process["size"], pageSize)
 
+    memoryFull = False
     i = 0
     while i < numPages and not memoryFull:
-        if (scheduleFrame(processID) == -1):
+
+        frameIndex = scheduleFrame(processID)
+
+        if frameIndex == -1:
             print("No Memory For Process")
             memoryFull = True
+            break
+
+        # FIX: add mapping
+        pageTables[-1]["mapping"].append(frameIndex)
+
         i += 1
 
-def printMemoryLayout(pagesTables):
-    i = 1
-    pageNum = 0
-    currentPID = pagesTables[0]["id"]
-    while i < len(pagesTables):
-        if pagesTables[i]["id"] == -1:
-            print("Frame #" + str(i) + " is free")
-        if currentPID != pagesTables[i]["id"]:
-            pageNum = 0
-        print("Frame #" + str(i) + " holds PID #" + str(pagesTables[i]["id"]) + " and page number " + str(pageNum))
-        pageNum += 1
-        currentPID = pagesTables[i]["id"]
-        i += 1
-    i = 1
-    pageNum = 0
-    currentPID = pagesTables[0]["id"]
-    while i < len(pagesTables):
-        rand = math.floor((random.random() * pageSize))
-        print("For Process of PID #" + str(pageTables[i]["id"]))
-        if currentPID != pagesTables[i]["id"]:
-            pageNum = 0
-        print("The Physical Address at logical address = " + str(pageNum) + " and offset = " + str(rand))
-        print(logicalToPhysical(pageSize, pageNum, rand))
+def printMemoryLayout(frames):
+    print("\n=== MEMORY LAYOUT ===")
 
-        pageNum += 1
-        currentPID = pagesTables[i]["id"]
-        i += 1
+    for i, frame in enumerate(frames):
+        if frame["id"] == -1:
+            print(f"Frame #{i} is free")
+        else:
+            print(f"Frame #{i} holds PID #{frame['id']}")
 
 def makePageTables(processes):
     i = 0

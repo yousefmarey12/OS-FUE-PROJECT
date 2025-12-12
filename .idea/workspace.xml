@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25720e42-4e25-4310-b82a-330b6178a567" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Paging.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Segmentation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CPU.py" beforeDir="false" afterPath="$PROJECT_DIR$/CPU.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Paging.py" beforeDir="false" afterPath="$PROJECT_DIR$/Paging.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +45,7 @@
     "git-widget-placeholder": "master"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.CPU">
+  <component name="RunManager">
     <configuration name="CPU" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="OS-FUE-PROJECT#" />
       <option name="ENV_FILES" value="" />
